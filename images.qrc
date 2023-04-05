@@ -1,20 +1,20 @@
 <RCC>
     <qresource prefix="/">
-        <file>../Images/Custom-Icon-Design-Flatastic-8-Open-folder-add.512.png</file>
-        <file>../Images/Custom-Icon-Design-Mono-General-1-Close current.512.png</file>
-        <file>../Images/Custom-Icon-Design-Mono-General-2-Copy.512.png</file>
-        <file>../Images/Custom-Icon-Design-Mono-General-2-Paste.512.png</file>
-        <file>../Images/Gakuseisean-Ivista-2-Files-New-File.256.png</file>
-        <file>../Images/Gakuseisean-Ivista-2-Files-New-Window.256.png</file>
-        <file>../Images/Graphicloads-Colorful-Long-Shadow-Search.256.png</file>
-        <file>../Images/Hopstarter-Sleek-Xp-Basic-Close-2.256.png</file>
-        <file>../Images/Icons8-Ios7-Editing-Cut-Filled.512.png</file>
-        <file>../Images/new.png</file>
-        <file>../Images/Oxygen-Icons.org-Oxygen-Actions-document-save.256.png</file>
-        <file>../Images/Pictogrammers-Material-File-File-replace-outline.512.png</file>
-        <file>../Images/printing.png</file>
-        <file>../Images/Redo.512.png</file>
-        <file>../Images/Undo.512.png</file>
-        <file>../Images/Parallelogram.png</file>
+        <file>Images/Custom-Icon-Design-Flatastic-8-Open-folder-add.512.png</file>
+        <file>Images/Custom-Icon-Design-Mono-General-1-Close current.512.png</file>
+        <file>Images/Custom-Icon-Design-Mono-General-2-Copy.512.png</file>
+        <file>Images/Custom-Icon-Design-Mono-General-2-Paste.512.png</file>
+        <file>Images/Gakuseisean-Ivista-2-Files-New-File.256.png</file>
+        <file>Images/Gakuseisean-Ivista-2-Files-New-Window.256.png</file>
+        <file>Images/Graphicloads-Colorful-Long-Shadow-Search.256.png</file>
+        <file>Images/Hopstarter-Sleek-Xp-Basic-Close-2.256.png</file>
+        <file>Images/Icons8-Ios7-Editing-Cut-Filled.512.png</file>
+        <file>Images/new.png</file>
+        <file>Images/Oxygen-Icons.org-Oxygen-Actions-document-save.256.png</file>
+        <file>Images/Parallelogram.png</file>
+        <file>Images/Pictogrammers-Material-File-File-replace-outline.512.png</file>
+        <file>Images/printing.png</file>
+        <file>Images/Redo.512.png</file>
+        <file>Images/Undo.512.png</file>
     </qresource>
 </RCC>
