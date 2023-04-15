@@ -39,6 +39,22 @@ private slots:
 
     void saveFile();
 
+    void on_Area_Solve_Button_clicked();
+
+    void on_H_Solve_Button_clicked();
+
+    void on_P_Solve_Button_clicked();
+
+    void on_actionNew_triggered();
+
+    void hideToolbar();
+
+    void ViewToolbar();
+
+    void on_actionAbout_triggered();
+
+
+
 private:
     Ui::Parallelogram_calculator *ui;
 
