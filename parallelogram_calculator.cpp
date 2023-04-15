@@ -3,10 +3,10 @@
 #include "ui_parallelogram_calculator.h"
 #include <QGraphicsScene>
 #include <QPainter>
-<<<<<<< HEAD
+
 #include "qgraphicsitem.h"
-=======
->>>>>>> ba1d64e0738da742e4a95386a36ea2d2a6fd9065
+
+
 
 Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
     : QMainWindow(parent)
@@ -16,7 +16,7 @@ Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
 {
     ui->setupUi(this);
 
-<<<<<<< HEAD
+
        // Connect the combo box to the stacked widget
          connect(ui->functionlist, SIGNAL(currentIndexChanged(int)), ui->stackedWidget, SLOT(setCurrentIndex(int)));
 
@@ -24,43 +24,8 @@ Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
          ui->stackedWidget->setCurrentIndex(0);
 //-----------------------------------------------------------------------------
 
-=======
-    // Connect the combo box to the stacked widget
-      connect(ui->functionlist, SIGNAL(currentIndexChanged(int)), ui->stackedWidget, SLOT(setCurrentIndex(int)));
-    // Set the initial page of the stacked widget
-      ui->stackedWidget->setCurrentIndex(0);
-      // Create a QGraphicsScene to hold the parallelogram diagram
-      QGraphicsScene* scene = new QGraphicsScene();
-      ui->Area_diagram->setScene(scene);
-      ui->Perimeter_diagram->setScene(scene);
-      ui->Height_diagram->setScene(scene);
+        connect(ui->actionSave, SIGNAL(triggered()),this,SLOT(saveFile()));
 
-      // Draw the parallelogram on the QGraphicsScene
-      QPolygonF parallelogram;
-      parallelogram << QPointF(0, 0) << QPointF(200, 0) << QPointF(150, 100) << QPointF(-50, 100);
-
-      QGraphicsTextItem *textItem1 = new QGraphicsTextItem("b");
-      textItem1->setPos(80, -23);
-
-      QGraphicsTextItem *textItem2 = new QGraphicsTextItem("a");
-      textItem2->setPos(-40, 30);
-
-      scene->addPolygon(parallelogram);
-      scene->addItem(textItem1);
-      scene->addItem(textItem2);
-
-
-      // Add a vertical line labeled H to the QGraphicsScene
-      QLineF line(QPointF(0, 0), QPointF(0, 100));
-      QGraphicsLineItem* itemH = new QGraphicsLineItem(line);
-      QGraphicsSimpleTextItem* textH = new QGraphicsSimpleTextItem("h");
-      textH->setPos(5, 50);
-      scene->addItem(itemH);
-      scene->addItem(textH);
-
-
-
->>>>>>> ba1d64e0738da742e4a95386a36ea2d2a6fd9065
 
 }
 Parallelogram_calculator::~Parallelogram_calculator()
@@ -68,7 +33,7 @@ Parallelogram_calculator::~Parallelogram_calculator()
     delete ui;
 }
 
-<<<<<<< HEAD
+
 void Parallelogram_calculator::paintEvent(QPaintEvent *e)
 {
     // Draw the Diagram into the graphic view
@@ -320,6 +285,76 @@ void Parallelogram_calculator::highlightArea(QGraphicsView *view) //highlight th
 }
 
 
+void Parallelogram_calculator::on_actionOpen_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Text Files (*.txt);;All Files (*)"));
 
-=======
->>>>>>> ba1d64e0738da742e4a95386a36ea2d2a6fd9065
+      if (fileName.isEmpty())
+          return;
+
+      QFile file(fileName);
+      if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+          QMessageBox::warning(this, tr("Error"), tr("Could not open file."));
+          return;
+      }
+
+      QTextStream in(&file);
+
+      if(ui->stackedWidget->currentIndex() == 0)
+      {
+
+        ui->Area_base_input->setText(in.readLine());
+        ui->Area_height_input->setText(in.readLine());
+
+      }
+      else if(ui->stackedWidget->currentIndex() ==1)
+      // Read and set other values as needed
+
+      file.close();
+}
+
+
+void Parallelogram_calculator::saveFile()
+{
+    // Prompt the user to choose a file name and location
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("Text Files (*.txt)"));
+
+    // Open the file in write mode
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        // If the file could not be opened, display an error message
+       QMessageBox::warning(this, tr("Error"), tr("Could not save file "));
+        return;
+    }
+
+
+    // Write the data to the file
+    QTextStream out(&file);
+
+    if(ui->stackedWidget->currentIndex() == 0)
+    {
+        out << tr("Area For Parallelogram") + "\n";
+        out << tr("Base Value :   ") + ui->Area_base_input->text() + "\n";
+        out << tr("Height Value:  ") + ui->Area_height_input->text() + "\n";
+        out << ui->Area_solutionFormula->text() + "\n";
+    }
+
+    else if(ui->stackedWidget->currentIndex() == 1)
+    {
+        out << tr("Perimeter For Parallelogram") + "\n";
+        out << tr("Base Value :   ") + ui->P_base_input->text() + "\n";
+        out << tr("Side Value :  ") + ui->P_side_input->text() + "\n";
+        out << ui->Permimeter_solutionFormula->text() + "\n";
+    }
+    else if (ui->stackedWidget->currentIndex() == 2)
+    {
+        out << tr("Height For Parallelogram") + "\n";
+        out << tr("Base Value :   ") + ui->H_base_input->text() + "\n";
+        out << tr("Area Value :  ") + ui->H_area_input->text() + "\n";
+        out << ui->Height_solutionFormula->text() + "\n";
+    }
+        file.close();
+
+}
+

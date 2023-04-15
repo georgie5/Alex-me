@@ -11,6 +11,8 @@
 #include <QPolygonF>
 #include <QFocusEvent>
 #include <QGuiApplication>
+#include <QFile>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Parallelogram_calculator; }
@@ -32,6 +34,10 @@ private slots:
     void highlightSideLine(QGraphicsView *view);
     void highlightArea(QGraphicsView *view);
 
+
+    void on_actionOpen_triggered();
+
+    void saveFile();
 
 private:
     Ui::Parallelogram_calculator *ui;
