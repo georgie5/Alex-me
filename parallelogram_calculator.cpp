@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 
+
 #include "qgraphicsitem.h"
 
 
@@ -23,10 +24,59 @@ Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
        // Set the initial page of the stacked widget
          ui->stackedWidget->setCurrentIndex(0);
 //-----------------------------------------------------------------------------
-
+         connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(actionNew()));
+            connect(ui->actionOpen,SIGNAL(triggered()),this,SLOT(actionOpen()));
         connect(ui->actionSave, SIGNAL(triggered()),this,SLOT(saveFile()));
+        connect(ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
+        connect(ui->actionExit,SIGNAL(triggered()),qApp,SLOT(closeAllWindows()));
+
+        connect(ui->actionHide_Toolbar,SIGNAL(triggered()),this,SLOT(hideToolbar()));
+        connect(ui->actionShow_Toolbar,SIGNAL(triggered()),this,SLOT(ViewToolbar()));
+        connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+        if(ui->stackedWidget->currentIndex() == 0)
+        {
+
+        }
+
+        else if(ui->stackedWidget->currentIndex() == 1)
+        {
+            connect(ui->actionCut, &QAction::triggered, ui->P_base_input, &QLineEdit::cut);
+            connect(ui->actionCut, &QAction::triggered, ui->P_side_input, &QLineEdit::cut);
+
+            connect(ui->actionCopy, &QAction::triggered, ui->P_base_input, &QLineEdit::copy);
+            connect(ui->actionCopy, &QAction::triggered, ui->P_side_input, &QLineEdit::copy);
+
+            connect(ui->actionPaste, &QAction::triggered, ui->Area_base_input, [=]() { ui->P_base_input->paste(); });
+            connect(ui->actionPaste, &QAction::triggered, ui->P_side_input, &QLineEdit::paste);
+
+            connect(ui->actionUndo, &QAction::triggered, ui->P_base_input, &QLineEdit::undo);
+            connect(ui->actionUndo, &QAction::triggered, ui->P_side_input, &QLineEdit::undo);
+
+            connect(ui->actionRedo, &QAction::triggered, ui->P_base_input, &QLineEdit::redo);
+            connect(ui->actionRedo, &QAction::triggered, ui->P_side_input, &QLineEdit::redo);
 
 
+        }
+        else if (ui->stackedWidget->currentIndex() == 2)
+        {
+            connect(ui->actionCut, &QAction::triggered, ui->H_base_input, &QLineEdit::cut);
+            connect(ui->actionCut, &QAction::triggered, ui->H_area_input, &QLineEdit::cut);
+
+            connect(ui->actionCopy, &QAction::triggered, ui->H_base_input, &QLineEdit::copy);
+            connect(ui->actionCopy, &QAction::triggered, ui->H_area_input, &QLineEdit::copy);
+
+            connect(ui->actionPaste, &QAction::triggered, ui->Area_base_input, [=]() { ui->H_base_input->paste(); });
+            connect(ui->actionPaste, &QAction::triggered, ui->H_area_input, &QLineEdit::paste);
+
+            connect(ui->actionUndo, &QAction::triggered, ui->H_base_input, &QLineEdit::undo);
+            connect(ui->actionUndo, &QAction::triggered, ui->H_area_input, &QLineEdit::undo);
+
+            connect(ui->actionRedo, &QAction::triggered, ui->H_base_input, &QLineEdit::redo);
+            connect(ui->actionRedo, &QAction::triggered, ui->H_area_input, &QLineEdit::redo);
+
+
+        }
 }
 Parallelogram_calculator::~Parallelogram_calculator()
 {
@@ -280,39 +330,30 @@ void Parallelogram_calculator::highlightArea(QGraphicsView *view) //highlight th
     parallelogramItem->setBrush(brush);
     area->addItem(parallelogramItem);
 
-
-
 }
 
 
 void Parallelogram_calculator::on_actionOpen_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Text Files (*.txt);;All Files (*)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Text Files (*.txt)"));
+    if (filename.isEmpty()) return;
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+    QTextStream in(&file);
+    QString content = in.readAll();
+    file.close();
 
-      if (fileName.isEmpty())
-          return;
-
-      QFile file(fileName);
-      if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-          QMessageBox::warning(this, tr("Error"), tr("Could not open file."));
-          return;
-      }
-
-      QTextStream in(&file);
-
-      if(ui->stackedWidget->currentIndex() == 0)
-      {
-
-        ui->Area_base_input->setText(in.readLine());
-        ui->Area_height_input->setText(in.readLine());
-
-      }
-      else if(ui->stackedWidget->currentIndex() ==1)
-      // Read and set other values as needed
-
-      file.close();
+    // Display the file content in a new window
+    QDialog* dialog = new QDialog(this);
+    dialog->setWindowTitle(filename);
+    dialog->setModal(false); // set modal property to false
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    QLabel* label = new QLabel(content, dialog);
+    label->setWordWrap(true);
+    label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard | Qt::LinksAccessibleByMouse);
+    layout->addWidget(label);
+    dialog->show(); // use show() instead of exec()
 }
-
 
 void Parallelogram_calculator::saveFile()
 {
@@ -337,7 +378,9 @@ void Parallelogram_calculator::saveFile()
         out << tr("Area For Parallelogram") + "\n";
         out << tr("Base Value :   ") + ui->Area_base_input->text() + "\n";
         out << tr("Height Value:  ") + ui->Area_height_input->text() + "\n";
-        out << ui->Area_solutionFormula->text() + "\n";
+        out << tr("Formula:  ") + ui->Area_solutionFormula->text() + "\n";
+        out << tr("Area Solution:  ") + ui->Area_solution2->text() + "\n";
+        out << tr("Answer:  ") + ui->Area_answspot->text() + "\n";
     }
 
     else if(ui->stackedWidget->currentIndex() == 1)
@@ -345,16 +388,111 @@ void Parallelogram_calculator::saveFile()
         out << tr("Perimeter For Parallelogram") + "\n";
         out << tr("Base Value :   ") + ui->P_base_input->text() + "\n";
         out << tr("Side Value :  ") + ui->P_side_input->text() + "\n";
-        out << ui->Permimeter_solutionFormula->text() + "\n";
+        out << tr("Formula:  ") + ui->Permimeter_solutionFormula->text() + "\n";
+        out << tr("Area Solution:  ") + ui->Perimeter_solution_2->text() + "\n";
+        out << tr("Answer:  ") + ui->Perimeter_answspot->text() + "\n";
+
     }
     else if (ui->stackedWidget->currentIndex() == 2)
     {
         out << tr("Height For Parallelogram") + "\n";
         out << tr("Base Value :   ") + ui->H_base_input->text() + "\n";
         out << tr("Area Value :  ") + ui->H_area_input->text() + "\n";
-        out << ui->Height_solutionFormula->text() + "\n";
+        out << tr("Formula:  ") + ui->Height_solutionFormula->text() + "\n";
+        out << tr("Area Solution:  ") + ui->Height_solution->text() + "\n";
+        out << tr("Answer:  ") + ui->Height_answspot->text() + "\n";
+
     }
         file.close();
 
 }
+
+
+void Parallelogram_calculator::on_Area_Solve_Button_clicked()
+{
+    // Get the base and height values from the QLineEdit widgets
+    double base = ui->Area_base_input->text().toDouble();
+    double height = ui->Area_height_input->text().toDouble();
+
+    // Calculate the area of the parallelogram using the formula
+    double area = base * height;
+
+    // Create a QString object that contains the formula with the substituted values
+    QString formula = QString("A = %1 * %2 = %3").arg(base).arg(height).arg(area);
+
+    // Display the formula in the first QLabel widget
+    ui->Area_solution2->setText(formula);
+
+    // Display the calculated area in the second QLabel widget
+    ui->Area_answspot->setText(QString::number(area));
+}
+
+
+void Parallelogram_calculator::on_H_Solve_Button_clicked()
+{
+    // Get base and area values from QLineEdits
+    double base = ui->H_base_input->text().toDouble();
+    double area = ui->H_area_input->text().toDouble();
+
+    // Calculate height using the formula for parallelogram
+    double height = area / base;
+
+    // Display the formula with the substituted values in a QLabel
+    QString formula = "H =  " + QString::number(area) + " / " + QString::number(base) + " = " + QString::number(height);
+    ui->Height_solution->setText(formula);
+
+    // Display the calculated height in a different QLabel
+
+    ui->Height_answspot->setText(QString::number(height));
+}
+
+
+
+void Parallelogram_calculator::on_P_Solve_Button_clicked()
+{
+    // Get the base and side values entered in the QLineEdit widgets
+    double base = ui->P_base_input->text().toDouble();
+    double side = ui->P_side_input->text().toDouble();
+
+    // Calculate the perimeter of the parallelogram using the formula: P = 2*(base + side)
+    double perimeter = 2*(base + side);
+
+    // Display the formula with the substituted value from the QLineEdit widgets
+    ui->Perimeter_solution_2->setText("P = 2*(" + QString::number(base) + " + " + QString::number(side) + ")");
+
+    // Display the calculated perimeter in a different QLabel
+    ui->Perimeter_answspot->setText(QString::number(perimeter));
+}
+
+
+
+void Parallelogram_calculator::on_actionNew_triggered()
+{
+
+       QWidget *newCalculator = new(Parallelogram_calculator); // create new QTextEdit object on the heap
+       newCalculator->show(); // show the new text editor window
+
+}
+
+void Parallelogram_calculator::hideToolbar()
+{   //sets the toolbar object to hide
+    ui->toolBar->hide();
+}
+
+void Parallelogram_calculator::ViewToolbar()
+{
+    //sets the toolbar object to show
+    ui->toolBar->show();
+}
+
+
+
+
+
+void Parallelogram_calculator::on_actionAbout_triggered()
+{
+   QMessageBox::about(this, tr("About Parallelogram Calculator"), tr("This is a simple Parallelogram Calculator created by Group 5."));
+}
+
+
 
