@@ -4,10 +4,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 
-
 #include "qgraphicsitem.h"
-
-
 
 Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
     : QMainWindow(parent)
@@ -23,9 +20,15 @@ Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
 
        // Set the initial page of the stacked widget
          ui->stackedWidget->setCurrentIndex(0);
+
+        // Update the connections based on the current index
+         updateConnections(ui->stackedWidget->currentIndex());
+
+         // Connect the currentChanged(int) signal to updateConnections(int) slot
+         connect(ui->stackedWidget, SIGNAL(currentChanged(int)), this, SLOT(updateConnections(int)));
 //-----------------------------------------------------------------------------
-         connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(actionNew()));
-            connect(ui->actionOpen,SIGNAL(triggered()),this,SLOT(actionOpen()));
+        connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(actionNew()));
+        connect(ui->actionOpen,SIGNAL(triggered()),this,SLOT(actionOpen()));
         connect(ui->actionSave, SIGNAL(triggered()),this,SLOT(saveFile()));
         connect(ui->actionClose,SIGNAL(triggered()),this,SLOT(close()));
         connect(ui->actionExit,SIGNAL(triggered()),qApp,SLOT(closeAllWindows()));
@@ -34,49 +37,6 @@ Parallelogram_calculator::Parallelogram_calculator(QWidget *parent)
         connect(ui->actionShow_Toolbar,SIGNAL(triggered()),this,SLOT(ViewToolbar()));
         connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-        if(ui->stackedWidget->currentIndex() == 0)
-        {
-
-        }
-
-        else if(ui->stackedWidget->currentIndex() == 1)
-        {
-            connect(ui->actionCut, &QAction::triggered, ui->P_base_input, &QLineEdit::cut);
-            connect(ui->actionCut, &QAction::triggered, ui->P_side_input, &QLineEdit::cut);
-
-            connect(ui->actionCopy, &QAction::triggered, ui->P_base_input, &QLineEdit::copy);
-            connect(ui->actionCopy, &QAction::triggered, ui->P_side_input, &QLineEdit::copy);
-
-            connect(ui->actionPaste, &QAction::triggered, ui->Area_base_input, [=]() { ui->P_base_input->paste(); });
-            connect(ui->actionPaste, &QAction::triggered, ui->P_side_input, &QLineEdit::paste);
-
-            connect(ui->actionUndo, &QAction::triggered, ui->P_base_input, &QLineEdit::undo);
-            connect(ui->actionUndo, &QAction::triggered, ui->P_side_input, &QLineEdit::undo);
-
-            connect(ui->actionRedo, &QAction::triggered, ui->P_base_input, &QLineEdit::redo);
-            connect(ui->actionRedo, &QAction::triggered, ui->P_side_input, &QLineEdit::redo);
-
-
-        }
-        else if (ui->stackedWidget->currentIndex() == 2)
-        {
-            connect(ui->actionCut, &QAction::triggered, ui->H_base_input, &QLineEdit::cut);
-            connect(ui->actionCut, &QAction::triggered, ui->H_area_input, &QLineEdit::cut);
-
-            connect(ui->actionCopy, &QAction::triggered, ui->H_base_input, &QLineEdit::copy);
-            connect(ui->actionCopy, &QAction::triggered, ui->H_area_input, &QLineEdit::copy);
-
-            connect(ui->actionPaste, &QAction::triggered, ui->Area_base_input, [=]() { ui->H_base_input->paste(); });
-            connect(ui->actionPaste, &QAction::triggered, ui->H_area_input, &QLineEdit::paste);
-
-            connect(ui->actionUndo, &QAction::triggered, ui->H_base_input, &QLineEdit::undo);
-            connect(ui->actionUndo, &QAction::triggered, ui->H_area_input, &QLineEdit::undo);
-
-            connect(ui->actionRedo, &QAction::triggered, ui->H_base_input, &QLineEdit::redo);
-            connect(ui->actionRedo, &QAction::triggered, ui->H_area_input, &QLineEdit::redo);
-
-
-        }
 }
 Parallelogram_calculator::~Parallelogram_calculator()
 {
@@ -485,14 +445,128 @@ void Parallelogram_calculator::ViewToolbar()
     ui->toolBar->show();
 }
 
-
-
-
-
 void Parallelogram_calculator::on_actionAbout_triggered()
 {
    QMessageBox::about(this, tr("About Parallelogram Calculator"), tr("This is a simple Parallelogram Calculator created by Group 5."));
 }
 
+void Parallelogram_calculator::on_actionPrint_triggered()
+{
+    // Get the user's input
+    int pageIndex = QInputDialog::getInt(this, tr("Print"), tr("Enter page number:"), 0, 0, ui->stackedWidget->count() );
+
+    // Get the requested stack page
+    QWidget *currentPage = ui->stackedWidget->widget(pageIndex);
+
+    // Print the content of the stack page
+    QPrinter printer;
+    QPrintDialog printDialog(&printer, this);
+
+    if (printDialog.exec() == QDialog::Rejected)
+    {
+        QMessageBox::warning(this, tr("Error"), tr("Could not print file "));
+        return;
+    }
+    QPainter painter(&printer);
+    currentPage->render(&painter);
+}
+
+void Parallelogram_calculator::on_Area_Clear_Button_clicked()
+{
+    ui->Area_base_input->clear();
+    ui->Area_height_input->clear();
+    ui->Area_answspot->clear();
+    ui->Area_solution2->clear();
+    ui->Area_solutionFormula->setText("A = b x h ");
+}
+
+
+void Parallelogram_calculator::on_P_Clear_Button_clicked()
+{
+    ui->P_base_input->clear();
+    ui->P_side_input->clear();
+    ui->Perimeter_answspot->clear();
+    ui->Perimeter_solution_2->clear();
+    ui->Permimeter_solutionFormula->setText("P = 2(a+b)");
+}
+
+void Parallelogram_calculator::on_H_Clear_Button_clicked()
+{
+    ui->H_area_input->clear();
+    ui->H_base_input->clear();
+    ui->Height_answspot->clear();
+    ui->Height_solution->clear();
+    ui->Height_solutionFormula->setText("H = A/b ");
+
+}
+
+void Parallelogram_calculator::updateConnections(int index)
+{
+    // Disconnect all edit actions from all QLineEdits
+    disconnect(ui->actionCut, nullptr, nullptr, nullptr);
+    disconnect(ui->actionCopy, nullptr, nullptr, nullptr);
+    disconnect(ui->actionPaste, nullptr, nullptr, nullptr);
+    disconnect(ui->actionUndo, nullptr, nullptr, nullptr);
+    disconnect(ui->actionRedo, nullptr, nullptr, nullptr);
+
+    // Connect the actions based on the current index
+    if(index == 0)
+    {
+        connect(ui->actionCut, SIGNAL(triggered()),ui->Area_base_input, SLOT(cut()));
+        connect(ui->actionCut, SIGNAL(triggered()),ui->Area_height_input, SLOT(cut()));
+
+        connect(ui->actionCopy, SIGNAL(triggered()),  ui->Area_base_input, SLOT(copy()));
+        connect(ui->actionCopy, SIGNAL(triggered()),ui->Area_height_input, SLOT(copy()));
+
+        connect(ui->actionPaste, SIGNAL(triggered()),ui->Area_base_input, SLOT(paste()));
+        connect(ui->actionPaste, SIGNAL(triggered()),ui->Area_height_input, SLOT(paste()));
+
+        connect(ui->actionUndo, SIGNAL(triggered()), ui->Area_base_input, SLOT(undo()));
+        connect(ui->actionUndo, SIGNAL(triggered()), ui->Area_height_input, SLOT(undo()));
+
+        connect(ui->actionRedo, SIGNAL(triggered()), ui->Area_base_input, SLOT(redo()));
+        connect(ui->actionRedo, SIGNAL(triggered()), ui->Area_height_input, SLOT(redo()));
+
+    }
+
+    else if(index == 1)
+    {
+        connect(ui->actionCut, SIGNAL(triggered()),ui->P_base_input, SLOT(cut()));
+        connect(ui->actionCut, SIGNAL(triggered()),ui->P_side_input, SLOT(cut()));
+
+        connect(ui->actionCopy, SIGNAL(triggered()),ui->P_base_input, SLOT(copy()));
+        connect(ui->actionCopy, SIGNAL(triggered()),ui->P_side_input, SLOT(copy()));
+
+        connect(ui->actionPaste, SIGNAL(triggered()),ui->P_base_input, SLOT(paste()));
+        connect(ui->actionPaste, SIGNAL(triggered()),ui->P_side_input, SLOT(paste()));
+
+        connect(ui->actionUndo, SIGNAL(triggered()), ui->P_base_input, SLOT(undo()));
+        connect(ui->actionUndo, SIGNAL(triggered()), ui->P_side_input, SLOT(undo()));
+
+        connect(ui->actionRedo, SIGNAL(triggered()), ui->P_base_input, SLOT(redo()));
+        connect(ui->actionRedo, SIGNAL(triggered()),ui->P_side_input, SLOT(redo()));
+
+
+    }
+    else if (index == 2)
+    {
+        connect(ui->actionCut, SIGNAL(triggered()),ui->H_base_input, SLOT(cut()));
+        connect(ui->actionCut, SIGNAL(triggered()),ui->H_area_input, SLOT(cut()));
+
+        connect(ui->actionCopy, SIGNAL(triggered()),ui->H_base_input, SLOT(copy()));
+        connect(ui->actionCopy, SIGNAL(triggered()),ui->H_area_input, SLOT(copy()));
+
+        connect(ui->actionPaste, SIGNAL(triggered()),ui->H_base_input, SLOT(paste()));
+        connect(ui->actionPaste, SIGNAL(triggered()),ui->H_area_input, SLOT(paste()));
+
+        connect(ui->actionUndo, SIGNAL(triggered()), ui->H_base_input, SLOT(undo()));
+        connect(ui->actionUndo, SIGNAL(triggered()), ui->H_area_input, SLOT(undo()));
+
+        connect(ui->actionRedo, SIGNAL(triggered()), ui->H_base_input, SLOT(redo()));
+        connect(ui->actionRedo, SIGNAL(triggered()),ui->H_area_input, SLOT(redo()));
+
+    }
+
+}
 
 

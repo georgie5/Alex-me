@@ -118,7 +118,7 @@
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
+               <enum>QSizePolicy::MinimumExpanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -378,7 +378,7 @@
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
+               <enum>QSizePolicy::MinimumExpanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -478,7 +478,7 @@
                </font>
               </property>
               <property name="text">
-               <string>A = 2(a+b)</string>
+               <string>P = 2(a+b)</string>
               </property>
              </widget>
             </item>
@@ -620,6 +620,24 @@
            <layout class="QHBoxLayout" name="horizontalLayout_14">
             <item>
              <widget class="QLabel" name="Height_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777165</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <pointsize>23</pointsize>
@@ -649,11 +667,11 @@
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
+               <enum>QSizePolicy::MinimumExpanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>40</width>
+                <width>30</width>
                 <height>20</height>
                </size>
               </property>
@@ -961,11 +979,12 @@
    </attribute>
    <addaction name="actionNew"/>
    <addaction name="actionSave"/>
-   <addaction name="actionClose"/>
    <addaction name="actionCut"/>
    <addaction name="actionCopy"/>
+   <addaction name="actionPaste"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
+   <addaction name="actionPrint"/>
   </widget>
   <action name="actionNew">
    <property name="icon">
@@ -1029,7 +1048,7 @@
   </action>
   <action name="actionCut">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="Images.qrc">
@@ -1062,7 +1081,7 @@
   </action>
   <action name="actionUndo">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="Images.qrc">
@@ -1080,7 +1099,7 @@
   </action>
   <action name="actionRedo">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="Images.qrc">
@@ -1098,7 +1117,7 @@
   </action>
   <action name="actionCopy">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="Images.qrc">

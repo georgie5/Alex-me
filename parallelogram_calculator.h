@@ -14,6 +14,11 @@
 #include <QFile>
 #include <QFileDialog>
 
+#include <QtPrintSupport/QPrintDialog>
+#include <QtPrintSupport/QPrinter>
+#include <QInputDialog>
+#include <QClipboard>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Parallelogram_calculator; }
 QT_END_NAMESPACE
@@ -53,6 +58,17 @@ private slots:
 
     void on_actionAbout_triggered();
 
+
+
+    void on_actionPrint_triggered();
+
+    void on_H_Clear_Button_clicked();
+
+    void on_Area_Clear_Button_clicked();
+
+    void on_P_Clear_Button_clicked();
+
+    void updateConnections(int index);
 
 
 private:
